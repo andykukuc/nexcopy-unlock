@@ -7,6 +7,4 @@ uDiskDLL.dll
 *.pdb
 *.ilk
 
-rust/target/
 # Rust build output
-rust/target/
