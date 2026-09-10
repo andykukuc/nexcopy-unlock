@@ -79,5 +79,5 @@ The drive letter and the expected volume label are compile time constants near t
 
 ## Licence
 
-Provided as is, with no warranty. Nexcopy is not affiliated with this project, and `uDiskDLL.dll`
-remains the property of its owner.
+MIT, see [LICENSE](LICENSE). Provided as is, with no warranty. Nexcopy is not affiliated with this
+project, and `uDiskDLL.dll` remains the property of its owner and is not covered by this licence.
