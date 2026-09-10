@@ -6,22 +6,64 @@ drive by calling the vendor's `uDiskDLL.dll` directly, instead of going through 
 Useful when you want the unlock step to be scriptable, to run unattended, or to return a real exit
 code that a batch file can branch on.
 
+Two implementations are included. They take the same arguments, print the same output and return the
+same exit codes, so use whichever suits your toolchain.
+
+| | Source | Build output |
+| --- | --- | --- |
+| C | `nexcopy_unlock.c` | `nexcopy_unlock.exe` |
+| Rust | `rust/src/main.rs` | `rust/target/i686-pc-windows-msvc/release/nexcopy_unlock.exe` |
+
 ## The DLL is not included
 
 `uDiskDLL.dll` is Nexcopy's proprietary binary and is **not** redistributed here. Obtain it from
-Nexcopy with your drive or duplicator software, and place it next to the compiled executable.
+Nexcopy with your drive or duplicator software, and place it next to whichever executable you build.
 Without it the tool exits with code 3.
 
-## Build
+## Both builds must be 32-bit
 
-The DLL is 32-bit, so the executable **must** be built 32-bit. A 64-bit process cannot load it and
-`LoadLibrary` fails with error 193, `ERROR_BAD_EXE_FORMAT`.
+The DLL is 32-bit. A 64-bit process cannot load it, and `LoadLibrary` fails with error 193,
+`ERROR_BAD_EXE_FORMAT`, before any Nexcopy code runs. Both toolchains will happily produce a 64-bit
+binary that compiles cleanly and then fails at runtime, so this is the first thing to check if the
+tool exits 3 with error 193.
 
-From an *x86 Native Tools Command Prompt for Visual Studio*:
+### Building the C version
+
+From an *x86 Native Tools Command Prompt for Visual Studio*, which selects the 32-bit compiler:
 
 ```
 cl /W4 /O2 nexcopy_unlock.c
 ```
+
+Then run it from the directory holding `uDiskDLL.dll`:
+
+```
+nexcopy_unlock.exe
+```
+
+### Building the Rust version
+
+`rust/.cargo/config.toml` pins the 32-bit target, so an ordinary release build is already correct.
+You need the target installed once:
+
+```
+rustup target add i686-pc-windows-msvc
+```
+
+```
+cd rust
+cargo build --release
+```
+
+Copy `uDiskDLL.dll` next to the binary, then run it:
+
+```
+copy ..\uDiskDLL.dll target\i686-pc-windows-msvc\release\
+target\i686-pc-windows-msvc\release\nexcopy_unlock.exe
+```
+
+The Rust build has no crate dependencies. See [rust/README.md](rust/README.md) for details on the
+FFI layer.
 
 ## Usage
 
@@ -39,6 +81,9 @@ nexcopy_unlock.exe [--apply|--temporary|--lunx|--clear-sectors]
 
 Exactly one mode may be given. Any other argument prints usage and exits 64.
 
+The `.cmd` files in this directory run each mode and capture its output and exit code to a text
+file, which is how the recordings in `results/` were made.
+
 Before touching the device the tool checks that the target volume carries the expected label and
 refuses otherwise, so that a mistyped drive letter cannot send controller commands to the wrong
 disk. After any change it re-probes and then performs a real write and delete test, so the output
@@ -55,6 +100,9 @@ tells you whether the drive is genuinely writable rather than whether the DLL cl
 | 5 | The status probe failed, so no change was attempted |
 | 6 | The unlock call returned failure |
 | 64 | Bad arguments |
+
+The Rust build adds one code the C does not have: **7**, meaning the DLL reported success but the
+following write test still failed. The C ignores the write test result when choosing its exit code.
 
 ## Observed behaviour
 
@@ -75,7 +123,7 @@ Recorded against one drive, kept in `results/`. Your hardware may differ.
 `--apply` is described by the vendor as permanent. Treat it as not reversible by this tool.
 
 The drive letter and the expected volume label are compile time constants near the top of
-`nexcopy_unlock.c`. Change them to match your device before building.
+`nexcopy_unlock.c` and of `rust/src/main.rs`. Change them in whichever version you build.
 
 ## Licence
 
