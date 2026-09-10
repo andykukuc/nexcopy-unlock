@@ -8,3 +8,4 @@ uDiskDLL.dll
 *.ilk
 
 # Rust build output
+rust/target/
