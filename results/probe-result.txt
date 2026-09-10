@@ -1,0 +1,3 @@
+Volume I:\ label=CVN7291B filesystem=NTFS
+GetWriteProtectStatusDLL returned 1; status=-1
+Probe only; no controller-setting change was requested.

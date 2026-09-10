@@ -1,0 +1,6 @@
+Volume I:\ label=CVN7291B filesystem=NTFS
+GetWriteProtectStatusDLL returned 1; status=-1
+Calling DisableReadOnlyTemporarilyDLL for I: ...
+DisableReadOnlyTemporarilyDLL returned 1
+Post-call GetWriteProtectStatusDLL returned 1; status=-1
+Write test: FAILED opening file (Win32 error 19)

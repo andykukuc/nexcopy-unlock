@@ -1,0 +1,7 @@
+Volume I:\ label=CVN7291B filesystem=NTFS
+GetWriteProtectStatusDLL returned 1; status=-1
+Calling SectorWriteProtectDLL with an empty protection-range table ...
+SectorWriteProtectDLL returned 0; detail=-2
+Post-call GetWriteProtectStatusDLL returned 1; status=-1
+Write test: SUCCEEDED (20 bytes)
+Delete test: SUCCEEDED

@@ -1,0 +1,8 @@
+# Vendor binary - obtain from Nexcopy, never redistribute
+uDiskDLL.dll
+
+# Build output
+*.exe
+*.obj
+*.pdb
+*.ilk
